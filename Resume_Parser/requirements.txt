@@ -1,0 +1,8 @@
+Flask==1.1.2
+Flask-RESTful==0.3.8
+PyPDF2==1.26.0
+docx2txt==0.8
+spacy==2.2.4
+re
+datefinder==0.7.0
+date_extractor==4.0.6
