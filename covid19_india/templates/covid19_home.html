@@ -1,0 +1,168 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="jumbotron container" id="jumbo_totals">
+  <div class="row">
+    <div class="col-md">
+      <p class="display-3" id="total_counter">{{ covid[0]['confirmed'] }}</p>
+      <p class="lead" id="total_p">Total number of cases in India</p>
+    </div>
+    <div class="col-md">
+      <p class="display-3" id="total_counter">{{ world }}</p>
+      <p class="lead" id="total_p">Total number of cases in the World</p>
+    </div>
+  </div>
+</div>
+<p class="text-center" id="info">Last updated on
+  <span>{{ covid[0]['lastupdatedtime'] }}</span> IST
+</p>
+<div class="container" id="card-container">
+  <div class="row">
+    <div class="card col-lg" style="width: 18rem;">
+      <div class="card-body" id="newcases">
+        <p class="card-title">{{ covid[0]['deltaconfirmed'] }}</p>
+        <p class="card-text">new cases today</p>
+      </div>
+    </div>
+    <div class="card col-lg" style="width: 18rem;">
+      <div class="card-body" id="activecases">
+        <p class="card-title">{{ covid[0]['active'] }}</p>
+        <p class="card-text">active cases in total</p>
+      </div>
+    </div>
+    <div class="card col-lg" style="width: 18rem;">
+      <div class="card-body" id="recoveredcases">
+        <p class="card-title">
+          <span>{{ covid[0]['recovered'] }}</span>
+              {% if not covid[0]['deltarecovered']|int == 0 %}
+          <span id="new_counter">
+                [+<span>{{ covid[0]['deltarecovered'] }}</span>]
+          </span>
+              {% endif %}
+        </p>
+        <p class="card-text">recovered cases</p>
+      </div>
+    </div>
+    <div class="card col-lg" style="width: 18rem;">
+      <div class="card-body" id="deaths">
+        <p class="card-title">
+          <span>{{ covid[0]['deaths'] }}</span>
+              {% if not covid[0]['deltadeaths']|int == 0 %}
+          <span id="new_counter">
+                [+<span>{{ covid[0]['deltadeaths'] }}</span>]
+          </span>
+              {% endif %}
+        </p>
+        <p class="card-text">deaths</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+    <div id="graph-0"></div>
+    <div id="graph-1"></div>
+</div>
+<p style="margin-top:4%"></p>
+<div class="table-responsive" id="mytable">
+  <div id="table_id_wrapper" class="dataTables_wrapper no-footer">
+    <table class="table table-hover pointer dataTable no-footer" id="table_id" role="grid">
+      <thead id="table-header">
+        <tr role="row">
+          <th style="text-align: center">State</th>
+          <th style="text-align: center">Total</th>
+          <th style="text-align: center">Active</th>
+          <th style="text-align: center">Total Recoverd</th>
+          <th style="text-align: center">Total Deaths</th>
+          <th style="text-align: center">Recoverd %</th>
+          <th style="text-align: center">Death %</th>
+          <th style="text-align: center">Cases %</th>
+        </tr>
+      </thead>
+      <tbody id="india_tbody">
+          {% for data in covid[1:] %}
+
+        <tr data-toggle="modal" data-target="#districtModal" role="row" class="even">
+          <td id="td_state">{{ data['state'] }}</td>
+          <td class="text-right">
+              {% if not data['deltaconfirmed']|int == 0 %}
+            <span id="up_newcases">
+              <svg
+                xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+              <span id="india_newcases">{{ data['deltaconfirmed'] }}</span>
+            </span>
+              {% endif %}
+            <span>{{ data['confirmed'] }}</span>
+          </td>
+            {% if not data['active']|int == 0 %}
+          <td class="text-right">{{ data['active'] }}</td>
+            {% else %}
+          <td class="text-right">-</td>
+            {% endif %}
+            {% if not data['recovered']|int == 0 %}
+          <td class="text-right">
+              {% if not data['deltarecovered']|int == 0 %}
+            <span id="up_newrecovered">
+              <svg
+                xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+              <span id="india_newrecovered">{{ data['deltarecovered'] }}</span>
+            </span>
+              {% endif %}
+            <span>{{ data['recovered'] }}</span>
+          </td>
+            {% else %}
+          <td class="text-right">-</td>
+            {% endif %}
+            {% if not data['deaths']|int == 0 %}
+          <td class="text-right">
+              {% if not data['deltadeaths']|int == 0 %}
+            <span id="up_newdeaths">
+              <svg
+                xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+              <span id="india_newdeaths">{{ data['deltadeaths'] }}</span>
+            </span>
+              {% endif %}
+            <span>{{ data['deaths'] }}</span>
+          </td>
+            {% else %}
+          <td class="text-right">-</td>
+            {% endif %}
+            {% if not data['confirmed']|int == 0 %}
+          <td class="text-right">{{ "{:.2f}".format((data['recovered']|int / data['confirmed']|int)*100) }}%</td>
+          <td class="text-right">{{ "{:.2f}".format((data['deaths']|int / data['confirmed']|int)*100) }}%</td>
+            {% else %}
+          <td class="text-right">-</td>
+          <td class="text-right">-</td>
+            {% endif %}
+            {% if not data['confirmed']|int == 0 %}
+          <td class="text-right sorting_1">{{ "{:.2f}".format((data['confirmed']|int / covid[0]['confirmed']|int)*100) }}%</td>
+            {% elif data['confirmed']|int == 0 %}
+          <td class="text-right sorting_1">-</td>
+            {% else %}
+          <td class="text-right sorting_1">0%</td>
+            {% endif %}
+        </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<footer>
+    <script type="text/javascript">
+        var graphs = {{ plot | safe}};
+        var ids = {{ids | safe}};
+        for(var i in graphs) {
+            Plotly.plot(ids[i], // the ID of the div, created above
+                graphs[i].data,
+                graphs[i].layout || {});
+        }
+    </script>
+</footer>
+{% endblock %}

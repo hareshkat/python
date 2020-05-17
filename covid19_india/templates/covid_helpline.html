@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="page-header">
+  <h1 class="project-name">Covid-19 Helpline Number</h1>
+</div>
+<div class="table-responsive" id="mytable">
+  <table class="table pointer dataTable " id="table_id">
+    <thead id="table-header">
+      <tr role="row">
+        <th style="text-align: center">State</th>
+        <th style="text-align: center">Number</th>
+      </tr>
+    </thead>
+    <tbody style="border-bottom: 1px solid #111">
+      {% for data in help_data %}
+      <tr data-toggle="modal" data-target="#districtModal" role="row" class="even">
+        <td id="td_state" style="text-align: center">{{ data['state_or_UT'] }}</td>
+        <td id="td_state" style="text-align: center">{{ data['helpline_number'] }}</td>
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
